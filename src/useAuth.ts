@@ -6,10 +6,18 @@ type AuthContextType = {
   loading: boolean;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used inside AuthProvider');
   return context;
+}
+
+export function useUserId() {
+  const { session } = useAuth();
+  if (!session) throw new Error('useUserId must be used on a protected page');
+  return session.user.id;
 }

@@ -13,24 +13,40 @@ import { Label } from '@/components/ui/label';
 import { queryClient } from '@/queryClient';
 import { supabase } from '@/supabaseClient';
 import { useUserId } from '@/useAuth';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import z from 'zod';
+
+const termSchema = z
+  .object({
+    title: z.string().trim().min(1, 'Required'),
+    startDate: z.date({ error: 'Required' }),
+    endDate: z.date({ error: 'Required' }),
+  })
+  .refine((data) => data.endDate >= data.startDate, {
+    message: 'End date must be on or after the start date',
+    path: ['endDate'],
+  });
+
+type termForm = z.infer<typeof termSchema>;
 
 export default function NewTermDialogue() {
   const userId = useUserId();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [startDate, setStartDate] = useState<Date | undefined>();
-  const [endDate, setEndDate] = useState<Date | undefined>();
-  const [formError, setFormError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<termForm>({ resolver: zodResolver(termSchema) });
 
   const createTerm = useMutation({
-    mutationFn: async (term: {
-      title: string;
-      startDate: Date;
-      endDate: Date;
-    }) => {
+    mutationFn: async (term: termForm) => {
       const { error } = await supabase.from('terms').insert({
         user_id: userId,
         title: term.title,
@@ -41,24 +57,13 @@ export default function NewTermDialogue() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['terms', userId] });
+      reset();
       setOpen(false);
-      setTitle('');
-      setStartDate(undefined);
-      setEndDate(undefined);
     },
   });
 
-  function handleCreate() {
-    if (!title.trim() || !startDate || !endDate) {
-      setFormError('Please fill in all fields');
-      return;
-    }
-    if (endDate < startDate) {
-      setFormError('End date must be on or after the start date');
-      return;
-    }
-    setFormError(null);
-    createTerm.mutate({ title, startDate, endDate });
+  function onSubmit(values: termForm) {
+    createTerm.mutate(values);
   }
 
   return (
@@ -70,22 +75,44 @@ export default function NewTermDialogue() {
         <DialogHeader>
           <DialogTitle>New Term</DialogTitle>
         </DialogHeader>
-        <div className="form-field">
-          <Label>Term Name</Label>
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-        <div className="form-field">
-          <Label>Start Date</Label>
-          <DatePicker date={startDate} onSelect={setStartDate} />
-        </div>
-        <div className="form-field">
-          <Label>End Date</Label>
-          <DatePicker date={endDate} onSelect={setEndDate} />
-        </div>
-        {formError && <p className="error-message">{formError}</p>}
-        <DialogFooter>
-          <Button onClick={handleCreate}>Create Term</Button>
-        </DialogFooter>
+        <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
+          <div className="form-field">
+            <Label>Term Name</Label>
+            <Input {...register('title')} />
+            {errors.title && (
+              <p className="error-message">{errors.title.message}</p>
+            )}
+          </div>
+          <div className="form-field">
+            <Label>Start Date</Label>
+            <Controller
+              control={control}
+              name="startDate"
+              render={({ field }) => (
+                <DatePicker date={field.value} onSelect={field.onChange} />
+              )}
+            />
+            {errors.startDate && (
+              <p className="error-message">{errors.startDate.message}</p>
+            )}
+          </div>
+          <div className="form-field">
+            <Label>End Date</Label>
+            <Controller
+              control={control}
+              name="endDate"
+              render={({ field }) => (
+                <DatePicker date={field.value} onSelect={field.onChange} />
+              )}
+            />
+            {errors.endDate && (
+              <p className="error-message">{errors.endDate.message}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button>Create Term</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

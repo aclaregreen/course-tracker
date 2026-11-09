@@ -3,6 +3,7 @@ import { supabase } from '@/supabaseClient';
 import { useUserId } from '@/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { format, parseISO } from 'date-fns';
+import { Link } from 'react-router';
 
 export default function Home() {
   const userId = useUserId();
@@ -44,7 +45,11 @@ export default function Home() {
       ) : (
         <div className="card-grid">
           {terms.map((term) => (
-            <div key={term.id} className="content-card">
+            <Link
+              key={term.id}
+              to={`/terms/${term.id}`}
+              className="content-card"
+            >
               <div className="content-card-header">
                 <h3 className="content-card-title">{term.title}</h3>
               </div>
@@ -52,7 +57,7 @@ export default function Home() {
                 {format(parseISO(term.start_date), 'MMM d')} –{' '}
                 {format(parseISO(term.end_date), 'MMM d')}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       )}

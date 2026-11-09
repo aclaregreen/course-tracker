@@ -316,6 +316,13 @@ body {
   padding: 1.5rem;
 }
 
+/* Space the fields inside the form the same as the dialog's own children */
+.form-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 /* Keep shadcn's footer band flush with the dialog edges at the new padding */
 .form-dialog [data-slot='dialog-footer'] {
   margin: 0.25rem -1.5rem -1.5rem;

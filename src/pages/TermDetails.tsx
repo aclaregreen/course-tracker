@@ -1,4 +1,4 @@
-import NewCourseDialog from '@/components/NewCourseDialog';
+import NewCourseDialog from '@/components/courses/NewCourseDialog';
 import { supabase } from '@/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
@@ -43,7 +43,7 @@ export default function TermDetails() {
           {term.courses.map((course) => (
             <Link
               key={course.id}
-              to={`/terms/${term.id}/courses/${course.id}`}
+              to={`/courses/${course.id}`}
               className="content-card"
             >
               <div className="content-card-header">

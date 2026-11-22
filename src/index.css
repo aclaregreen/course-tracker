@@ -328,3 +328,10 @@ body {
   margin: 0.25rem -1.5rem -1.5rem;
   padding: 1rem 1.5rem;
 }
+
+/* Date picker with a time input beside it */
+.date-time-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}

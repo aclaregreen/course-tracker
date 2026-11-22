@@ -1,4 +1,4 @@
-import NewTermDialogue from '@/components/NewTermDialogue';
+import NewTermDialogue from '@/components/terms/NewTermDialogue';
 import { supabase } from '@/supabaseClient';
 import { useUserId } from '@/useAuth';
 import { useQuery } from '@tanstack/react-query';

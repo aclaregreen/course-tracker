@@ -4,6 +4,7 @@ import ProtectedRoute from '@/ProtectedRoute';
 import CreateAccount from '@/pages/CreateAccount';
 import Home from '@/pages/Home';
 import { AuthProvider } from '@/AuthContext';
+import TermDetails from '@/pages/TermDetails';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
+            <Route path="/terms/:termId" element={<TermDetails />} />
           </Route>
         </Routes>
       </AuthProvider>

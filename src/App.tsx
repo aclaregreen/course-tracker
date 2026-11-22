@@ -5,6 +5,7 @@ import CreateAccount from '@/pages/CreateAccount';
 import Home from '@/pages/Home';
 import { AuthProvider } from '@/AuthContext';
 import TermDetails from '@/pages/TermDetails';
+import CourseDetails from '@/pages/CourseDetails';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/terms/:termId" element={<TermDetails />} />
+            <Route path="/courses/:courseId/" element={<CourseDetails />} />
           </Route>
         </Routes>
       </AuthProvider>
